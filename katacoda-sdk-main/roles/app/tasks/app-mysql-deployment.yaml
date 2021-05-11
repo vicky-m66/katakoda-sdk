@@ -1,0 +1,30 @@
+- name: Create App Deployment
+  community.kubernetes.k8s:
+     definition:
+        kind: Deployment
+        apiVersion: apps/v1
+        metadata:
+          name: fullstack-app-mysql
+          namespace: '{{ ansible_operator_meta.namespace }}'
+          labels:
+            app: fullstack-app-mysql
+        spec:
+          replicas: '{{size}}'                                                 # Number of pods to run at any given time
+          selector:
+            matchLabels: 
+              app: fullstack-app-mysql                                # This deployment applies to any Pods matching the specified label
+          template:                                                   # This deployment will create a set of pods using the configurations in this template
+            metadata:
+              labels:                                                 # The labels that will be applied to all of the pods in this deployment
+                app: fullstack-app-mysql                              
+            spec:                                                     # Spec for the container which will run in the Pod
+              containers:
+                - name: fullstack-app-mysql 
+                  image: prash2622/fullstack_api                   # The image we are getting from dockerhub
+                  imagePullPolicy: IfNotPresent                         # If we have not pulled it before, get it from dockerhub
+                  ports:
+                    - name: http
+                      containerPort: 8080                               # Should match the port number that the Go application listens on
+                  envFrom:
+                    - secretRef:
+                        name: mysql-secret 

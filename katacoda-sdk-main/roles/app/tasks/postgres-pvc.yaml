@@ -1,0 +1,16 @@
+- name: Create Postgres PVC
+  community.kubernetes.k8s:
+     definition:
+        kind: PersistentVolumeClaim
+        apiVersion: v1
+        metadata:
+          name: postgres-pv-claim
+          namespace: '{{ ansible_operator_meta.namespace }}'
+          labels:
+            app: postgres
+        spec:
+          accessModes:
+            - ReadWriteMany
+          resources:
+            requests:
+              storage: 5Gi

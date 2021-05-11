@@ -1,0 +1,16 @@
+---
+- name: Include MySQL ADMIN Secrete
+  include_tasks: mysql-admin-secret.yaml
+- name: Include MySQL USER Secrete
+  include_tasks: mysql-usersecret.yaml
+- name: Include MySQL PVC
+  include_tasks: mysql-db-pvc.yaml
+- name: Include MySQL Deployment
+  include_tasks: mysql-db-deployment.yaml
+- name: Include MySQL Service
+  include_tasks: mysql-db-service.yaml
+- name: Include App Deployment
+  include_tasks: app-deployment.yaml
+- name: Include App Service
+  include_tasks: app-service.yaml
+# tasks file for App

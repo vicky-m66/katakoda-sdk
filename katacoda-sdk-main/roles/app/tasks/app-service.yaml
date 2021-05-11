@@ -1,0 +1,20 @@
+- name: Create App Service
+  community.kubernetes.k8s:
+     definition:
+        kind: Service
+        apiVersion: v1
+        metadata:
+          name: students-app
+          namespace: '{{ ansible_operator_meta.namespace }}'
+          labels:
+            app: students-app
+        spec:
+           type: NodePort
+           ports:
+             - name: http
+               protocol: TCP
+               port: 8080
+               targetPort: 8080
+               nodePort: 30163
+        selector:
+           app: students-app

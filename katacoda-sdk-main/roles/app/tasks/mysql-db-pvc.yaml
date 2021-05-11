@@ -1,0 +1,17 @@
+- name: Create Mysql PVC
+  community.kubernetes.k8s:
+     definition:
+        kind: PersistentVolumeClaim
+        apiVersion: v1
+        metadata:
+          name: mysql-pv-claim
+          namespace: '{{ ansible_operator_meta.namespace }}'
+          labels:
+            app: mysql
+            tier: database
+        spec:                                   # Access mode and resource limit         # Request a certain storage class
+          accessModes:
+            - ReadWriteMany                     # ReadWriteMany means the volume can be mounted as read-write by many Nodes
+          resources:
+            requests:
+              storage: 5Gi

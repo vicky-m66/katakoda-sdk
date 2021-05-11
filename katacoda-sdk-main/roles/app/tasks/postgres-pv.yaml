@@ -1,0 +1,20 @@
+- name: Create Postgres PV
+  community.kubernetes.k8s:
+     definition:
+        kind: PersistentVolume
+        apiVersion: v1
+        metadata:
+          name: '{{ ansible_operator_meta.name }}'
+          namespace: '{{ ansible_operator_meta.namespace }}'
+          labels:
+            type: local
+            app: postgres
+        spec:
+         storageClassName: local
+         capacity:
+           storage: 5Gi
+         accessModes:
+           - ReadWriteMany
+         persistentVolumeReclaimPolicy: Delete
+         hostPath:
+           path: /opt/mnt/data

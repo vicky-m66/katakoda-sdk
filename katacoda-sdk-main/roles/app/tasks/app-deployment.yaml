@@ -1,0 +1,52 @@
+- name: Create App Deployment
+  community.kubernetes.k8s:
+     definition:
+        kind: Deployment
+        apiVersion: apps/v1
+        metadata:
+          name: students-app
+          namespace: '{{ ansible_operator_meta.namespace }}'
+        spec:
+          selector:
+            matchLabels:
+              app: students-app
+          replicas: 1
+          template:
+            metadata:
+              labels:
+                app: students-app
+            spec:
+              containers:
+                - name: students-app
+                  image: "750713/spring-app:4.0"
+                  imagePullPolicy: "Always"
+                  ports:
+                    - containerPort: 8080
+                  resources:
+                    requests:
+                      cpu: 100m
+                      memory: 300Mi
+                    limits:
+                      cpu: 1500m
+                      memory: 1024Mi
+                  env:   # Setting Enviornmental Variables
+                    - name: DB_HOST   # Setting Database host address from configMap
+                      valueFrom:
+                       configMapKeyRef:
+                        name: db-config  # name of configMap
+                        key: host
+                    - name: DB_NAME  # Setting Database name from configMap
+                      valueFrom:
+                       configMapKeyRef:
+                        name: db-config
+                        key: name
+                    - name: DB_USERNAME  # Setting Database username from Secret
+                      valueFrom:
+                       secretKeyRef:
+                        name: db-user # Secret Name
+                        key: username
+                    - name: DB_PASSWORD # Setting Database password from Secret
+                      valueFrom:
+                       secretKeyRef:
+                        name: db-user
+                        key: password

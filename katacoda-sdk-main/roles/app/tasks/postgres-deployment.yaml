@@ -1,0 +1,34 @@
+- name: Create Postgres Deployment
+  community.kubernetes.k8s:
+     definition:
+        kind: Deployment
+        apiVersion: v1
+        metadata:
+          name: postgres
+          namespace: '{{ ansible_operator_meta.namespace }}'
+        spec:
+          replicas: '{{size}}'
+          selector:
+            matchLabels:
+              app: postgres
+          template:
+            metadata:
+              labels:
+                app: postgres
+            spec:
+              containers:
+                - name: postgres
+                  image: postgres:10.4
+                  imagePullPolicy: "IfNotPresent"
+                  ports:
+                    - containerPort: 5432
+                  envFrom:
+                    - configMapRef:
+                        name: postgres-config
+                  volumeMounts:
+                    - name: postgredb
+                      mountPath: /var/lib/postgresql/data
+              volumes:
+                - name: postgredb
+                  persistentVolumeClaim:
+                   claimName: postgres-pv-claim

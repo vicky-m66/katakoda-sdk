@@ -1,0 +1,14 @@
+- name: Create Postgres ConfigMap
+  community.kubernetes.k8s:
+     definition:
+        kind: ConfigMap
+        apiVersion: v1
+        metadata:
+          name: postgres-config
+          namespace: '{{ ansible_operator_meta.namespace }}'
+          labels:
+            app: postgres
+        data:
+          POSTGRES_DB: postgresdb
+          POSTGRES_USER: postgresadmin
+          POSTGRES_PASSWORD: admin123

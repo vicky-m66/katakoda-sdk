@@ -1,0 +1,58 @@
+- name: Create MySQL Deployment
+  community.kubernetes.k8s:
+     definition:
+       apiVersion: apps/v1
+       kind: Deployment
+       metadata:
+         name: mysql
+         namespace: '{{ ansible_operator_meta.namespace }}'
+         labels:
+           app: mysql
+           tier: mysql
+       spec:
+        selector: 
+         matchLabels:
+           app: mysql
+           tier: mysql
+        strategy:
+          type: Recreate
+        template:
+         metadata:
+          labels: 
+            app: mysql
+            tier: mysql
+         spec:
+           containers:
+           - image: mysql:5.7
+             name: mysql
+             env:                                # Environment variables passed to the container 
+                 - name: MYSQL_ROOT_PASSWORD # Setting Root Password of mysql From a 'Secret'
+                   valueFrom:
+                    secretKeyRef:
+                     name: db-admin # Name of the 'Secret'
+                     key: password   # 'key' inside the Secret which contains required 'value'
+                 - name: MYSQL_USER # Setting USER username on mysql From a 'Secret'
+                   valueFrom:
+                    secretKeyRef:
+                     name: db-user
+                     key: username
+                 - name: MYSQL_PASSWORD # Setting USER Password on mysql From a 'Secret'
+                   valueFrom:
+                    secretKeyRef:
+                     name: db-user
+                     key: password
+                 - name: MYSQL_DATABASE # Setting Database Name from a 'ConfigMap'
+                   valueFrom:
+                    configMapKeyRef:
+                     name: db-config
+                     key: name
+             ports:
+              - containerPort: 3306
+                name: mysql
+             volumeMounts:        
+              - name: mysql-persistent-storage
+                mountPath: /var/lib/mysql 
+           volumes:
+             - name: mysql-persistent-storage 
+               persistentVolumeClaim:
+                claimName: mysql-pv-claim

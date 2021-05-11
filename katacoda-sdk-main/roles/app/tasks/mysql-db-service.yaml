@@ -1,0 +1,18 @@
+- name: Create Mysql Service
+  community.kubernetes.k8s:
+     definition:
+        kind: Service
+        apiVersion: v1
+        metadata:
+          name: mysql
+          namespace: '{{ ansible_operator_meta.namespace }}'
+          labels:                                # Labels that will be applied to the resource
+            app: mysql
+        spec:
+          type: NodePort
+          ports:
+            - port: 3306
+              targetPort: 3306
+          selector:                              # Selects any Pod with labels `app=fullstack-mysql,tier=mysql`
+            app: mysql
+            tier: database
